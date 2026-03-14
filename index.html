@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <link rel="icon" href="homepage.jpg">
+    <meta charset="UTF-8">
+    <title>810browser</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background: #f4f4f5; }
+        .box { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+        .download-area { background: #f9fafb; border: 2px dashed #ccc; padding: 30px; text-align: center; margin: 20px 0; }
+        .btn { background: #5f6368; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; cursor: pointer; border: none; }
+        .btn-latest { background: #1a73e8; } 
+        .note { font-size: 12px; color: #666; margin-top: 10px; }
+        h1 { font-size: 20px; margin-top: 0; }
+        ul { font-size: 14px; color: #444; }
+        
+        /* 画面共通設定 */
+        #site-lock, #consent-screen, #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        #site-lock { background: #1a1a1a; z-index: 9999; }
+        #consent-screen { background: #f4f4f5; z-index: 9998; display: none; }
+        #loading-screen { background: #f4f4f5; z-index: 9997; display: none; flex-direction: column; }
+        #main-content { display: none; }
+
+        .lock-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center; border: 2px solid #00FF00; max-width: 400px; }
+        .consent-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 30px rgba(0,0,0,0.2); text-align: center; border: 3px solid #1a73e8; width: 90%; max-width: 800px; }
+        
+        input[type="password"] { padding: 12px; width: 220px; border: 2px solid #ddd; border-radius: 4px; outline: none; font-size: 16px; text-align: center; }
+        input[type="password"]:focus { border-color: #00FF00; }
+        #msg { color: red; font-size: 14px; margin-top: 15px; height: 1em; font-weight: bold; }
+        .lock-btn { background: #333; color: #00FF00; padding: 10px 25px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
+        .info-box { text-align: left; background: #fff; padding: 20px; border-radius: 4px; line-height: 1.8; border: 1px solid #ccc; color: #333; overflow-y: auto; margin-bottom: 25px; font-size: 20px; height: 300px; }
+        
+        /* ぐるぐるアニメーション */
+        .spinner {
+            width: 60px; height: 60px;
+            border: 6px solid rgba(26, 115, 232, 0.2);
+            border-top: 6px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div id="site-lock">
+    <div class="lock-container">
+        <h2 style="margin-top:0;">LOCKING</h2>
+        <p style="color: #666; font-size: 14px;">閲覧するには10桁のパスワードが必要です</p>
+        <input type="password" id="site-pass" placeholder="Password..." onkeydown="if(event.key==='Enter') verifySite()">
+        <div><button class="lock-btn" onclick="verifySite()">UNLOCK</button></div>
+        <p id="msg"></p>
+    </div>
+</div>
+
+<div id="consent-screen">
+    <div class="consent-container">
+        <h2 style="margin-top:0; color: #1a73e8; font-size: 24px;">ご利用上の注意</h2>
+        <div class="info-box">
+            ・本ソフトウェアをダウンロード・使用することにより、利用者は本規約のすべての条項に同意したものとみなされます。<br>
+            ・個人開発プロジェクトであり、Appleによる公証（Notarization）を受けておりません。このため、起動時にmacOS Gatekeeperによる警告が表示されます。<br><br>
+            ・利用者は「右クリック＞開く」という明示的な操作により、自己責任において実行を承認するものとします。<br>
+            ・開発者は、本ソフトウェアの使用によって生じた直接的、間接的、付随的、結果的損害について、一切の責任を負いません。<br>
+            ・利用者は、本ソフトウェアの解析、再配布、または公序良俗に反する目的での使用を禁止されます。<br>
+            ・本規約の内容を理解し同意する場合のみ、「同意して進む」をクリックしてください。
+        </div>
+        <button class="btn btn-latest" onclick="startLoading()" style="width: 100%; padding: 15px; font-size: 18px;">上記の内容に同意して進む</button>
+    </div>
+</div>
+
+<div id="loading-screen">
+    <div class="spinner"></div>
+    <div style="color: #1a73e8; font-weight: bold; font-size: 20px;">認証情報を確認中...</div>
+</div>
+
+<div id="main-content">
+    <div class="box" style="border-left: 5px solid #1a73e8;">
+        <h1>810browser v1.1.0 (First Release)</h1>
+        <div class="download-area">
+            <a href="810browser-1.0.0-arm64-mac.zip" download class="btn btn-latest">Download v1.1.0 (.zip)</a>
+            <div class="note">※初回起動時：右クリック ＞ 開く</div>
+        </div>
+        <ul><li>検索機能/タブ機能追加</li><li>ブラウザバック機能追加</li></ul><br>
+        https://63.gigafile.nu/0622-o044e2c985d51a6f24fccd852a117ea59
+    </div>
+
+    <div class="box" style="border-left: 5px solid #1a73e8;">
+        <h1>810browser v1.1.1</h1>
+        <div class="download-area">
+            <a href="810browser-1.0.1-arm64-mac.zip" download class="btn btn-latest">Download v1.1.1 (.zip)</a>
+            <div class="note">※初回起動時：右クリック ＞ 開く</div>
+        </div>
+        <ul><li>初期UIから変更</li><li>リロード機能追加</li></ul>
+    </div>
+
+    <div class="box" style="border-left: 5px solid #1a73e8;">
+        <h1>810browser v1.1.2</h1>
+        <div class="download-area">
+            <a href="810browser-1.0.2-arm64-mac.zip" download class="btn btn-latest">Download v1.1.2 (.zip)</a>
+            <div class="note">※初回起動時：右クリック ＞ 開く</div>
+        </div>
+        <ul><li>Enterで検索機能追加</li><li>アプリ内パスワード機能の追加</li></ul>
+    </div>
+
+    <div class="box" style="border-left: 5px solid #1a73e8;">
+        <h1>810browser v.1.1.3 </h1>
+        <div class="download-area">
+            <a href="810browser-1.0.3-arm64-mac.zip" download class="btn btn-latest">Download v1.1.3 (.zip)</a>
+            <div class="note">※初回起動時：右クリック ＞ 開く</div>
+        </div>
+        <ul><li>タブ削除機能追加</li><li>設定ボタンの追加</li><li>パスワード変更機能の追加</li></ul>
+    </div>
+    <div class="box" style="border-left: 5px solid #1a73e8;">
+        <h1>810browser v.1.1.4 </h1>
+        <div class="download-area">
+            <a href="810browser-1.0.4-arm64-mac.zip" download class="btn btn-latest">Download v1.1.4 (.zip)</a>
+            <div class="note">※初回起動時：右クリック ＞ 開く</div>
+        </div>
+        <ul><li>設定画面をタブに変更</li><li>設定画面のUIを変更</li><li>容量の削減</li></ul>
+    </div>
+    <div class="box" style="border-left: 5px solid #5f6368">
+        <h1>810browser v.1.1.5 </h1>
+        <div class="download-area">
+            <a class="btn">Coming Soon</a>
+            <div class="note">※次回アップデート</div>
+        </div>
+        <ul><li>設定アイコン,URLの変更</li><li>設定機能の増量予定</li><li>大幅な容量の削減予定</li></ul>
+    </div>
+</div>
+
+<script>
+let attempts = 0;
+
+function verifySite() {
+    const pass = document.getElementById("site-pass").value;
+    if (pass === "0521") {
+        document.getElementById("site-lock").style.display = "none";
+        document.getElementById("consent-screen").style.display = "flex";
+    } else {
+        attempts++;
+        const msgEl = document.getElementById("msg");
+        if (attempts >= 3) {
+            msgEl.innerText = "ACCESS DENIED...";
+            setTimeout(() => { window.location.replace("about:blank"); }, 1000);
+        } else {
+            msgEl.innerText = `パスワードが違います (${attempts}/3)`;
+            document.getElementById("site-pass").value = "";
+        }
+    }
+}
+
+// 演出用の新関数
+function startLoading() {
+    document.getElementById("consent-screen").style.display = "none"; 
+    document.getElementById("loading-screen").style.display = "flex"; 
+
+    setTimeout(() => {
+        document.getElementById("loading-screen").style.display = "none";
+        document.getElementById("main-content").style.display = "block"; 
+        window.scrollTo(0, 0);
+    }, 1500); 
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+810browser-1.0.0-arm64-mac.zip filter=lfs diff=lfs merge=lfs -text
+810browser-1.0.1-arm64-mac.zip filter=lfs diff=lfs merge=lfs -text
+810browser-1.0.2-arm64-mac.zip filter=lfs diff=lfs merge=lfs -text
+810browser-1.0.3-arm64-mac.zip filter=lfs diff=lfs merge=lfs -text
+810browser-1.0.4-arm64-mac.zip filter=lfs diff=lfs merge=lfs -text
